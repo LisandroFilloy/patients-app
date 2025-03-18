@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { useState, useRef } from "react";
 
 let TEST_PATIENTS = [
@@ -83,6 +82,10 @@ export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [FullNameValidationError, setFullNameValidationError] = useState(false);
+  const [emailValidationError, setEmailValidationError] = useState(false);
+  const [phoneNumberValidationError, setPhoneNumberValidationError] = useState(false);
+  const [characteristicValidationError, setCharacteristicValidaitonError] = useState(false);
 
   // Handle drag events
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
@@ -179,10 +182,12 @@ export default function Home() {
             <div>
               <h1 className="px-1">Full Name:</h1>
               <input className="border-2 rounded-sm p-1 w-[300px]"></input>
+              {FullNameValidationError && <h3 className="text-xs text-red-500 mt-1">Invalid Name</h3>}
             </div>
             <div>
               <h1 className="px-1">Email Address:</h1>
               <input className="border-2 rounded-sm p-1 w-[300px]"></input>
+              {emailValidationError && <h3 className="text-xs text-red-500 mt-1">Invalid Email</h3>}
             </div>
             <div>
               <h1 className="px-1">Phone Number:</h1>
@@ -190,6 +195,8 @@ export default function Home() {
                 <input className="border-2 rounded-sm p-1 w-[60px]"></input>
                 <input className="border-2 rounded-sm p-1 w-[230px]"></input>
               </div>
+              {phoneNumberValidationError && <h3 className="text-xs text-red-500">Invalid Phone number</h3>}
+              {characteristicValidationError && <h3 className="text-xs text-red-500">Invalid Characteristic</h3>}
             </div>
             <div
               className={`relative w-[300px] h-[150px] border-2 border-dashed rounded-lg flex flex-col justify-center items-center cursor-pointer ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
