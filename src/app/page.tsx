@@ -92,24 +92,23 @@ export default function Home() {
         {TEST_PATIENTS.map((patient) => {
           return (
             <div onClick={() => setExpanded(expanded === patient.id ? null : patient.id)}
-              className={`hover:scale-102 border-1 border-gray-200 rounded-md shadow-lg flex flex-col gap-4 items-center p-4 cursor-pointer"
+              className={`hover:scale-102 border-1 border-gray-200 rounded-md shadow-lg flex flex-col items-center p-4 cursor-pointer"
                 }`}
-              key={patient.email_adress}>
-
-              <div className="text-center text-xl">{patient.full_name}</div>
+              key={patient.id}>
 
               <div>
                 <img
                   src={patient.id_photo}
                   alt="ID"
-                  className="rounded-lg w-[214px] h-[135px] object-cover"
+                  className="rounded-lg w-[214px] h-[135px] object-cover mb-2"
                 />
               </div>
+              <div className="text-center text-3xl">{patient.full_name}</div>
 
               {expanded === patient.id && (
-                <div className="mt-2 text-start">
-                  <p><span className="font-bold">email:</span> {patient.email_adress}</p>
-                  <p><span className="font-bold">Phone:</span> {patient.phone_number}</p>
+                <div className="text-start text-gray-500">
+                  <p>{patient.email_adress}</p>
+                  <p>{patient.phone_number}</p>
                 </div>
               )}
             </div>
@@ -120,7 +119,12 @@ export default function Home() {
       {newPatientModal && (
         <div className="w-screen h-screen z-100 fixed top-0 left-0 flex justify-center items-center">
           <div className="absolute inset-0 bg-black opacity-80" onClick={() => setNewPatientModal(false)}></div>
-          <div className="bg-white w-[500px] h-[600px] z-10 relative border-black rounded-lg flex flex-col gap-4 p-8 items-center text-xl">
+          <div className="bg-white w-[450px] h-[600px] z-10 relative border-black rounded-lg flex flex-col gap-4 p-4 pt-16 items-center text-xl">
+            <div
+              onClick={() => setNewPatientModal(false)}
+              className="absolute top-5 right-5 bg-gray-200 p-1 rounded-full cursor-pointer">
+              X
+            </div>
             <div>
               <h1 className="px-1">Full Name:</h1>
               <input className="border-2 rounded-sm p-1 w-[300px]"></input>
