@@ -182,10 +182,10 @@ export default function Home() {
       {newPatientModal && (
         <div className="w-screen h-screen z-100 fixed top-0 left-0 flex justify-center items-center">
           <div className="absolute inset-0 bg-black opacity-80" onClick={() => setNewPatientModal(false)}></div>
-          <div className="bg-white w-[450px] pb-8 z-10 relative border-black rounded-lg flex flex-col gap-4 p-4 pt-16 items-center text-lg">
+          <div className="bg-white w-[450px] pb-8 z-10 relative border-black rounded-lg flex flex-col gap-4 p-4 pt-16 items-center text-md">
             <div
               onClick={() => setNewPatientModal(false)}
-              className="absolute top-5 right-5 p-1 rounded-full w-10 h-10 cursor-pointer hover:bg-gray-300 flex justify-center items-center border-2">
+              className="absolute top-5 right-5 p-1 rounded-full w-10 h-10 cursor-pointer hover:bg-gray-100 flex justify-center items-center border-1 border-gray-300 shadow-lg">
               x
             </div>
             <div>
@@ -251,7 +251,7 @@ export default function Home() {
               )}
             </div>
 
-            <button onClick={() => setSubmitLoading(true)} className="cursor-pointer border-2 rounded-md w-16 h-8 bg-blue-500 text-white hover:bg-blue-400 flex justify-center items-center'">{!submitLoading ? "Save" : <Spinner className="animate-spin"></Spinner>}</button>
+            <button onClick={() => setSubmitLoading(true)} className="cursor-pointer border-2 rounded-md w-16 h-8 bg-blue-500 text-white hover:bg-blue-400 flex justify-center items-center text-sm'">{!submitLoading ? "Save" : <Spinner className="animate-spin"></Spinner>}</button>
           </div>
         </div>
       )}
