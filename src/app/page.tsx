@@ -44,7 +44,13 @@ export default function Home() {
       }
       const data = await response.json();
       // Transformar los datos que vienen de la DB al formato que necesitamos
-      const transformedPatients = data.map((patient: any) => ({
+      const transformedPatients = data.map((patient: {
+        id: number;
+        name: string;
+        email: string;
+        phone_number: string;
+        imageURL: string;
+      }) => ({
         id: patient.id,
         full_name: patient.name,
         email_adress: patient.email,
