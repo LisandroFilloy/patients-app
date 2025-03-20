@@ -215,7 +215,7 @@ export default function Home() {
       }
 
       const data = await response.json();
-      await sleep(1500);
+      await sleep(1000);
 
       
       // Refresh patients list after adding a new one
@@ -226,6 +226,16 @@ export default function Home() {
         description: "The patient has been successfully created.",
         type: "success",
       });
+
+      // Enviar correo de bienvenida
+      await fetch("/api/send-email", {
+        method: "POST",
+        body: JSON.stringify({
+          to: email,
+          subject: "You have been added to the Patients App",
+          text: "Please confirm this email! - Link"
+        }),
+      });
       
       closeModal();
 
@@ -233,7 +243,7 @@ export default function Home() {
       return data;
     } catch (error) {
       console.error("Error creating patient:", error);
-      await sleep(1500);
+      await sleep(1000);
       setSubmitLoading(false);
       closeModal();
       setToast({
