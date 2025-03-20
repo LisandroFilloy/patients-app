@@ -1,93 +1,14 @@
 "use client"
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ImSpinner8 as Spinner } from "react-icons/im";
 import Toast from "@/components/Toast";
 import { saveImageLocally } from "@/lib/helpers";
-
-
-
-let TEST_PATIENTS = [
-  {
-    'id': 1,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 2,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 3,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 4,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 5,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 6,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 7,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 8,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 9,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-  {
-    'id': 10,
-    'full_name': 'Tomas Lopez',
-    'email_adress': 'tomas.lopez@gmail.com',
-    'phone_number': '+5491133334444',
-    'id_photo': 'DNI-prueba.jpg'
-  },
-];
-
-interface PatientData {
-  name: string,
-  email: string,
-  phone_number: string,
-  imageURL: string,
-}
+import { Patient, PatientData } from "@/lib/types"
 
 export default function Home() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<null | number>(null);
   const [newPatientModal, setNewPatientModal] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -110,6 +31,38 @@ export default function Home() {
     description: string;
     type: "success" | "error";
   } | null>(null);
+
+  useEffect(() => {
+    fetchPatients();
+  }, []);
+
+  const fetchPatients = async () => {
+    try {
+      const response = await fetch('/api/patients');
+      if (!response.ok) {
+        throw new Error('Error fetching patients');
+      }
+      const data = await response.json();
+      // Transformar los datos que vienen de la DB al formato que necesitamos
+      const transformedPatients = data.map((patient: any) => ({
+        id: patient.id,
+        full_name: patient.name,
+        email_adress: patient.email,
+        phone_number: patient.phone_number,
+        id_photo: patient.imageURL
+      }));
+      setPatients(transformedPatients);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+      setToast({
+        message: "Error",
+        description: "Failed to load patients. Please refresh the page.",
+        type: "error",
+      });
+      setLoading(false);
+    }
+  };
 
   function sleep(ms:number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -250,14 +203,27 @@ export default function Home() {
 
       const data = await response.json();
       await sleep(1500);
-      setSubmitLoading(false);
+
       setNewPatientModal(false);
+      
+      // Refresh patients list after adding a new one
+      fetchPatients();
 
       setToast({
         message: "Success!",
         description: "The patient has been successfully created.",
         type: "success",
       });
+      
+      // Reset form fields
+      setName('');
+      setEmail('');
+      setCharacteristic('');
+      setPhoneNumber('');
+      setUploadedFile(null);
+      setPreviewUrl(null);
+      setImageUrl('');
+      
       return data;
     } catch (error) {
       console.error("Error creating patient:", error);
@@ -281,31 +247,41 @@ export default function Home() {
           className="hover:bg-green-100 border-1 border-gray-200 rounded-md shadow-lg flex items-center p-4 flex justify-center items-center cursor-pointer">
           <span className="text-8xl text-green-500">+</span>
         </div>
-        {TEST_PATIENTS.map((patient) => {
-          return (
-            <div onClick={() => setExpanded(expanded === patient.id ? null : patient.id)}
-              className={`hover:scale-102 border-1 border-gray-200 rounded-md shadow-lg flex flex-col items-center p-4 cursor-pointer"
-                }`}
-              key={patient.id}>
-              <div>
-                <img
-                  src={patient.id_photo}
-                  alt="ID"
-                  className="rounded-lg w-[214px] h-[135px] object-cover mb-2"
-                />
-              </div>
-              <div className="text-center text-3xl">{patient.full_name}</div>
-
-              {expanded === patient.id && (
-                <div className="text-start text-gray-500">
-                  <p>{patient.email_adress}</p>
-                  <p>{patient.phone_number}</p>
+        
+        {loading ? (
+          <div className="flex justify-center items-center p-8">
+            <Spinner className="animate-spin text-3xl text-blue-500" />
+          </div>
+        ) : patients.length === 0 ? (
+          <div className="text-center p-8 text-gray-500">
+            No patients found. Add your first patient using the + button.
+          </div>
+        ) : (
+          patients.map((patient) => {
+            return (
+              <div onClick={() => setExpanded(expanded === patient.id ? null : patient.id)}
+                className={`hover:scale-102 border-1 border-gray-200 rounded-md shadow-lg flex flex-col items-center p-4 cursor-pointer"
+                  }`}
+                key={patient.id}>
+                <div>
+                  <img
+                    src={patient.id_photo}
+                    alt="ID"
+                    className="rounded-lg w-[214px] h-[135px] object-cover mb-2"
+                  />
                 </div>
-              )}
-            </div>
+                <div className="text-center text-3xl">{patient.full_name}</div>
 
-          );
-        })}
+                {expanded === patient.id && (
+                  <div className="text-start text-gray-500">
+                    <p>{patient.email_adress}</p>
+                    <p>{patient.phone_number}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
       {newPatientModal && (
         <div className="w-screen h-screen z-100 fixed top-0 left-0 flex justify-center items-center">

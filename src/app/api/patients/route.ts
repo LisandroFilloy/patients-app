@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma"; // Assuming you have a Prisma instance setup
 
+export async function GET() {
+  try {
+    // Fetch all patients from the database
+    const patients = await prisma.patient.findMany();
+    
+    // Return the patients as JSON
+    return NextResponse.json(patients);
+  } catch (error) {
+    console.error("Error fetching patients:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch patients" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Parse the incoming request body
