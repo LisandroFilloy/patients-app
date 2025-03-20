@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useRef } from "react";
+import { ImSpinner8 as Spinner } from "react-icons/im";
+
+
 
 let TEST_PATIENTS = [
   {
@@ -86,6 +89,7 @@ export default function Home() {
   const [emailValidationError, setEmailValidationError] = useState(false);
   const [phoneNumberValidationError, setPhoneNumberValidationError] = useState(false);
   const [characteristicValidationError, setCharacteristicValidaitonError] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   // Handle drag events
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
@@ -135,6 +139,11 @@ export default function Home() {
     }
   };
 
+  async function handleSubmit(){
+    const response = await fetch('/api/add-patient');
+
+  }
+
   return (
     <div className="m-8">
       <h1 className="text-4xl flex justify-center mb-8">Patients</h1>
@@ -181,19 +190,19 @@ export default function Home() {
             </div>
             <div>
               <h1 className="px-1">Full Name:</h1>
-              <input className="border-2 rounded-sm p-1 w-[300px]"></input>
+              <input className="shadow-lg border-1 border-gray-300 rounded-sm p-1 w-[300px]"></input>
               {FullNameValidationError && <h3 className="text-xs text-red-500 mt-1">Invalid Name</h3>}
             </div>
             <div>
               <h1 className="px-1">Email Address:</h1>
-              <input className="border-2 rounded-sm p-1 w-[300px]"></input>
+              <input className="shadow-lg border-1 border-gray-300 rounded-sm p-1 w-[300px]"></input>
               {emailValidationError && <h3 className="text-xs text-red-500 mt-1">Invalid Email</h3>}
             </div>
             <div>
               <h1 className="px-1">Phone Number:</h1>
               <div className="flex gap-[10px]">
-                <input className="border-2 rounded-sm p-1 w-[60px]"></input>
-                <input className="border-2 rounded-sm p-1 w-[230px]"></input>
+                <input className="shadow-lg border-1 border-gray-300  rounded-sm p-1 w-[60px]"></input>
+                <input className="shadow-lg border-1 border-gray-300  rounded-sm p-1 w-[230px]"></input>
               </div>
               {phoneNumberValidationError && <h3 className="text-xs text-red-500">Invalid Phone number</h3>}
               {characteristicValidationError && <h3 className="text-xs text-red-500">Invalid Characteristic</h3>}
@@ -242,7 +251,7 @@ export default function Home() {
               )}
             </div>
 
-            <button className="cursor-pointer border-2 rounded-md px-2 py-1 bg-blue-500 text-white hover:bg-blue-400">Save</button>
+            <button onClick={() => setSubmitLoading(true)} className="cursor-pointer border-2 rounded-md w-16 h-8 bg-blue-500 text-white hover:bg-blue-400 flex justify-center items-center'">{!submitLoading ? "Save" : <Spinner className="animate-spin"></Spinner>}</button>
           </div>
         </div>
       )}
