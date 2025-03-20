@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl // openssl needed for prisma
+RUN apk update && apk add --no-cache openssl
 
 COPY package*.json ./
 COPY prisma ./prisma/
@@ -14,9 +14,6 @@ RUN npx prisma generate
 COPY . .
 
 RUN npm run build
-
-COPY scripts/start.sh ./
-RUN chmod +x start.sh
 
 EXPOSE 3000
 

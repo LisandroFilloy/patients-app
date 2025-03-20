@@ -1,5 +1,19 @@
 services:
-  postgres:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy  # Wait for DB readiness
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/patients_db
+    env_file:
+      - .env  # Store sensitive SMTP credentials externally
+    networks:
+      - app-network
+
+  db:
     image: postgres:15-alpine
     container_name: postgres_db
     restart: always
@@ -11,5 +25,16 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
