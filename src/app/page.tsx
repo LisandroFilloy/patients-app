@@ -160,7 +160,53 @@ export default function Home() {
     }
   };
 
+  // Validación de campos
+  const validateFields = (): boolean => {
+    let isValid = true;
+    
+    // Validar nombre (debe contener al menos dos strings separados por un espacio)
+    if (!name.includes(' ') || name.trim().split(' ').filter(part => part.length > 0).length < 2) {
+      setFullNameValidationError(true);
+      isValid = false;
+    } else {
+      setFullNameValidationError(false);
+    }
+    
+    // Validar email (debe contener '@' y '.')
+    if (!email.includes('@') || !email.includes('.')) {
+      setEmailValidationError(true);
+      isValid = false;
+    } else {
+      setEmailValidationError(false);
+    }
+    
+    // Validar característica (debe contener '+' y como máximo 3 números)
+    if (!characteristic.startsWith('+') || 
+        characteristic.length > 4 || 
+        !/^\+\d{1,3}$/.test(characteristic)) {
+      setCharacteristicValidaitonError(true);
+      isValid = false;
+    } else {
+      setCharacteristicValidaitonError(false);
+    }
+    
+    // Validar número de teléfono (debe contener al menos 6 números y solo números)
+    if (phoneNumber.length < 6 || !/^\d+$/.test(phoneNumber)) {
+      setPhoneNumberValidationError(true);
+      isValid = false;
+    } else {
+      setPhoneNumberValidationError(false);
+    }
+    
+    return isValid;
+  };
+
   async function handleSubmit(patientData: PatientData) {
+    // Validar campos antes de enviar
+    if (!validateFields()) {
+      return; // No continuar si hay errores de validación
+    }
+    
     setSubmitLoading(true);
     try {
       const response = await fetch("/api/patients", {
