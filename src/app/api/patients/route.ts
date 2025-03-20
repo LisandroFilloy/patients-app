@@ -4,12 +4,12 @@ import prisma from "@/lib/prisma"; // Assuming you have a Prisma instance setup
 export async function POST(req: NextRequest) {
   try {
     // Parse the incoming request body
-    const { name, email, imageURL } = await req.json();
+    const { name, email, phone_number, imageURL } = await req.json();
 
     // Check if all required fields are present
-    if (!name || !email || !imageURL) {
+    if (!name || !email || !phone_number || !imageURL) {
       return NextResponse.json(
-        { message: "Name, email, and imageURL are required." },
+        { message: "Name, email, phone_number and imageURL are required." },
         { status: 400 }
       );
     }
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         email,
+        phone_number,
         imageURL,
       },
     });
