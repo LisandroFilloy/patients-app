@@ -174,6 +174,19 @@ export default function Home() {
     return isValid;
   };
 
+  const closeModal = () => {
+
+          setNewPatientModal(false);
+          // Reset form fields
+          setName('');
+          setEmail('');
+          setCharacteristic('');
+          setPhoneNumber('');
+          setUploadedFile(null);
+          setPreviewUrl(null);
+          setImageUrl('');
+  }
+
   async function handleSubmit(patientData: PatientData) {
     // Validate fields before sending
     if (!validateFields()) {
@@ -204,7 +217,6 @@ export default function Home() {
       const data = await response.json();
       await sleep(1500);
 
-      setNewPatientModal(false);
       
       // Refresh patients list after adding a new one
       fetchPatients();
@@ -215,21 +227,15 @@ export default function Home() {
         type: "success",
       });
       
-      // Reset form fields
-      setName('');
-      setEmail('');
-      setCharacteristic('');
-      setPhoneNumber('');
-      setUploadedFile(null);
-      setPreviewUrl(null);
-      setImageUrl('');
+      closeModal();
+
       
       return data;
     } catch (error) {
       console.error("Error creating patient:", error);
       await sleep(1500);
       setSubmitLoading(false);
-      setNewPatientModal(false);
+      closeModal();
       setToast({
         message: "Error",
         description: "Failed to create patient. Please try again.",
@@ -285,10 +291,10 @@ export default function Home() {
       </div>
       {newPatientModal && (
         <div className="w-screen h-screen z-100 fixed top-0 left-0 flex justify-center items-center">
-          <div className="absolute inset-0 bg-black opacity-80" onClick={() => setNewPatientModal(false)}></div>
+          <div className="absolute inset-0 bg-black opacity-80" onClick={() => closeModal()}></div>
           <div className="bg-white w-[450px] pb-8 z-10 relative border-black rounded-lg flex flex-col gap-4 p-4 pt-16 items-center text-md">
             <div
-              onClick={() => setNewPatientModal(false)}
+              onClick={() => closeModal()}
               className="absolute top-5 right-5 p-1 rounded-full w-10 h-10 cursor-pointer hover:bg-gray-100 flex justify-center items-center border-1 border-gray-300 shadow-lg">
               x
             </div>
