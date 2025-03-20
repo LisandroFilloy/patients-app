@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { ImSpinner8 as Spinner } from "react-icons/im";
 import Toast from "@/components/Toast";
+import { saveImageLocally } from "@/lib/helpers";
 
 
 
@@ -241,9 +242,15 @@ export default function Home() {
 
       // Parse the response JSON if request was successful
       const data = await response.json();
+      let imageUrl = '';
+      if (uploadedFile) {
+        imageUrl = await saveImageLocally(uploadedFile);
+      }
       await sleep(1500);
       setSubmitLoading(false);
       setNewPatientModal(false);
+
+
 
       setToast({
         message: "Success!",
