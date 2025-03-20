@@ -19,4 +19,5 @@ model Patient {
   email String @unique
   phone_number String
   imageURL String
+  createdAt DateTime @default(now())
 }

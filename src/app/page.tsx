@@ -93,6 +93,7 @@ export default function Home() {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [FullNameValidationError, setFullNameValidationError] = useState(false);
   const [emailValidationError, setEmailValidationError] = useState(false);
@@ -114,7 +115,6 @@ export default function Home() {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  // Handle drag events
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -126,7 +126,6 @@ export default function Home() {
     }
   };
 
-  // Handle drop event
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -137,7 +136,6 @@ export default function Home() {
     }
   };
 
-  // Handle file input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
@@ -146,34 +144,39 @@ export default function Home() {
     }
   };
 
-  // Process the file
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     setUploadedFile(file);
 
-    // Validar extensión del archivo
     if (!file.name.toLowerCase().endsWith('.jpg')) {
       setImageValidationError(true);
     } else {
       setImageValidationError(false);
+      // Crear URL para la imagen y guardarla localmente
+      try {
+        const localImageUrl = await saveImageLocally(file);
+        setImageUrl(localImageUrl);
+      } catch (error) {
+        console.error("Error al guardar la imagen localmente:", error);
+        setImageValidationError(true);
+      }
     }
 
-    // Create a preview URL for the image
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
   };
 
-  // Handle button click to open file dialog
+  
   const onButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  // Validación de campos
+
   const validateFields = (): boolean => {
     let isValid = true;
     
-    // Validar nombre (debe contener al menos dos strings separados por un espacio)
+    // Validate name (must contain at least two strings separated by a space)
     if (!name.includes(' ') || name.trim().split(' ').filter(part => part.length > 0).length < 2) {
       setFullNameValidationError(true);
       isValid = false;
@@ -181,7 +184,7 @@ export default function Home() {
       setFullNameValidationError(false);
     }
     
-    // Validar email (debe contener '@' y '.')
+    // Validate email (must contain '@' and '.')
     if (!email.includes('@') || !email.includes('.')) {
       setEmailValidationError(true);
       isValid = false;
@@ -189,7 +192,7 @@ export default function Home() {
       setEmailValidationError(false);
     }
     
-    // Validar característica (debe contener '+' y como máximo 3 números)
+    // Validate characteristic (must contain '+' and at most 3 numbers)
     if (!characteristic.startsWith('+') || 
         characteristic.length > 4 || 
         !/^\+\d{1,3}$/.test(characteristic)) {
@@ -199,7 +202,7 @@ export default function Home() {
       setCharacteristicValidaitonError(false);
     }
     
-    // Validar número de teléfono (debe contener al menos 6 números y solo números)
+    // Validate phone number (must contain at least 6 numbers and only numbers)
     if (phoneNumber.length < 6 || !/^\d+$/.test(phoneNumber)) {
       setPhoneNumberValidationError(true);
       isValid = false;
@@ -219,38 +222,36 @@ export default function Home() {
   };
 
   async function handleSubmit(patientData: PatientData) {
-    // Validar campos antes de enviar
+    // Validate fields before sending
     if (!validateFields()) {
-      return; // No continuar si hay errores de validación
+      return; // Don't continue if there are validation errors
     }
     
     setSubmitLoading(true);
     try {
+      // Incluir la URL de la imagen en los datos del paciente
+      const dataWithImage = {
+        ...patientData,
+        imageURL: imageUrl
+      };
+      
       const response = await fetch("/api/patients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(patientData), // The data to send in the request
+        body: JSON.stringify(dataWithImage), // Enviar datos con la URL de la imagen
       });
 
       if (!response.ok) {
-        // Handle server errors (like 4xx, 5xx)
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to create patient");
       }
 
-      // Parse the response JSON if request was successful
       const data = await response.json();
-      let imageUrl = '';
-      if (uploadedFile) {
-        imageUrl = await saveImageLocally(uploadedFile);
-      }
       await sleep(1500);
       setSubmitLoading(false);
       setNewPatientModal(false);
-
-
 
       setToast({
         message: "Success!",
@@ -371,6 +372,7 @@ export default function Home() {
                     e.stopPropagation();
                     setUploadedFile(null);
                     setPreviewUrl(null);
+                    setImageUrl('');
                     setImageValidationError(false);
                   }}
                 >
@@ -384,7 +386,7 @@ export default function Home() {
               name: name,
               phone_number: characteristic + phoneNumber,
               email: email,
-              imageURL: 'test'
+              imageURL: imageUrl
             })}
               className="cursor-pointer border-2 rounded-md w-16 h-8 bg-blue-500 text-white hover:bg-blue-400 flex justify-center items-center text-sm'">{!submitLoading ? "Save" : <Spinner className="animate-spin"></Spinner>}</button>
           </div>
