@@ -137,8 +137,8 @@ export default function Home() {
       setFullNameValidationError(false);
     }
     
-    // Validate email (must contain '@' and '.')
-    if (!email.includes('@') || !email.includes('.')) {
+    // Validate email (must be a gmail.com address)
+    if (!email.endsWith('@gmail.com')) {
       setEmailValidationError(true);
       isValid = false;
     } else {
@@ -306,7 +306,7 @@ export default function Home() {
             <div>
               <h1 className="px-1">Email Address:</h1>
               <input onChange={(e) => { setEmail(e.target.value) }} className="shadow-lg border-1 border-gray-300 rounded-sm p-1 w-[300px]"></input>
-              {emailValidationError && <h3 className="text-xs text-red-500 mt-1">Invalid Email</h3>}
+              {emailValidationError && <h3 className="text-xs text-red-500 mt-1">Email must be a Gmail address (@gmail.com)</h3>}
             </div>
             <div>
               <h1 className="px-1">Phone Number:</h1>
