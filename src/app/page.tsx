@@ -97,6 +97,7 @@ export default function Home() {
   const [emailValidationError, setEmailValidationError] = useState(false);
   const [phoneNumberValidationError, setPhoneNumberValidationError] = useState(false);
   const [characteristicValidationError, setCharacteristicValidaitonError] = useState(false);
+  const [imageValidationError, setImageValidationError] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -148,6 +149,13 @@ export default function Home() {
   const handleFile = (file: File) => {
     setUploadedFile(file);
 
+    // Validar extensión del archivo
+    if (!file.name.toLowerCase().endsWith('.jpg')) {
+      setImageValidationError(true);
+    } else {
+      setImageValidationError(false);
+    }
+
     // Create a preview URL for the image
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
@@ -196,6 +204,14 @@ export default function Home() {
       isValid = false;
     } else {
       setPhoneNumberValidationError(false);
+    }
+    
+    // Validar imagen (debe ser .jpg)
+    if (!uploadedFile || !uploadedFile.name.toLowerCase().endsWith('.jpg')) {
+      setImageValidationError(true);
+      isValid = false;
+    } else {
+      setImageValidationError(false);
     }
     
     return isValid;
@@ -312,7 +328,7 @@ export default function Home() {
               {characteristicValidationError && <h3 className="text-xs text-red-500">Invalid Characteristic</h3>}
             </div>
             <div
-              className={`relative w-[300px] h-[150px] border-2 border-dashed rounded-lg flex flex-col justify-center items-center cursor-pointer ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
+              className={`relative w-[300px] h-[170px] border-2 border-dashed rounded-lg flex flex-col justify-center items-center cursor-pointer ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
@@ -348,11 +364,13 @@ export default function Home() {
                     e.stopPropagation();
                     setUploadedFile(null);
                     setPreviewUrl(null);
+                    setImageValidationError(false);
                   }}
                 >
                   X
                 </button>
               )}
+              {imageValidationError && <h3 className="text-xs text-red-500 mt-1">La imagen debe tener extensión .jpg</h3>}
             </div>
 
             <button onClick={() => handleSubmit({
