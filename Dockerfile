@@ -10,11 +10,15 @@ COPY prisma ./prisma/
 RUN npm install
 RUN npx prisma generate
 
-
+# Copy all app files
 COPY . .
+
+# Make start script executable
+RUN chmod +x start.sh
 
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Use your start script as the entry point
+CMD ["./start.sh"]

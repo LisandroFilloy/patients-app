@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "@supabase/supabase-js": "^2.49.1",
     "next": "15.2.2",
     "nodemailer": "^6.10.0",
     "react": "^19.0.0",

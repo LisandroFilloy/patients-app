@@ -5,11 +5,9 @@ services:
       - "3000:3000"
     depends_on:
       db:
-        condition: service_healthy  # Wait for DB readiness
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/patients_db
+        condition: service_healthy
     env_file:
-      - .env  # Store sensitive SMTP credentials externally
+      - .env
     networks:
       - app-network
 

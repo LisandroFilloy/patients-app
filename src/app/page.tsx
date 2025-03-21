@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { ImSpinner8 as Spinner } from "react-icons/im";
 import Toast from "@/components/Toast";
-import { saveImageLocally } from "@/lib/helpers";
 import { Patient, PatientData } from "@/lib/types"
 
 export default function Home() {
@@ -112,8 +111,23 @@ export default function Home() {
       setImageValidationError(false);
       // Crear URL para la imagen y guardarla localmente
       try {
-        const localImageUrl = await saveImageLocally(file);
-        setImageUrl(localImageUrl);
+        // Crear un FormData para enviar el archivo
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Enviar el archivo al endpoint de carga
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error('Error al subir la imagen');
+        }
+        
+        const data = await response.json();
+        const cloudeImageURL = data.imageUrl;
+        setImageUrl(cloudeImageURL);
       } catch (error) {
         console.error("Error al guardar la imagen localmente:", error);
         setImageValidationError(true);
@@ -288,8 +302,12 @@ export default function Home() {
                 <div>
                   <img
                     src={patient.id_photo}
-                    alt="ID"
+                    alt={`ID photo of ${patient.full_name}`}
                     className="rounded-lg w-[214px] h-[135px] object-cover mb-2"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null; // Prevenir loop infinito
+                    }}
                   />
                 </div>
                 <div className="text-center text-3xl">{patient.full_name}</div>
